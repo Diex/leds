@@ -36,7 +36,9 @@ void loop() {
 
   while(true){
     blank();
-    set(random(4), random(4), HIGH);
+    set(2, 2, HIGH);
+    set(2, 3, HIGH);
+    set(0, 3, HIGH);
     delay(500);
   }
 
