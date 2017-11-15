@@ -175,6 +175,7 @@ void setup() {
 // ================================================================
 
 int pos = 0;
+float angle; 
 
 void loop() {
   // if programming failed, don't try to do anything
@@ -191,23 +192,26 @@ void loop() {
     mpu.dmpGetQuaternion(&orientation, fifoBuffer);
     mpu.dmpGetGravity(&gravity, &orientation);
 
-    float angle;    
+       
     angle = atan2(-gravity.y, gravity.x);
+//    angle = ease(angle, atan2(-gravity.y + 0.000001, gravity.x) , 0.9) ;
     
     if(angle > 0){ // cuad 1 y 2
-      pos = map(angle * 4096, PI * 4096, 0, NUMPIXELS - 1 , (NUMPIXELS - 1)/2);
+      pos = map(angle * 4096, PI * 4096, 0, NUMPIXELS  , (NUMPIXELS)/2);
     }else{
       // lo cambio de cuadrante
-      pos = map(angle * 4096, 0, -PI * 4096, (NUMPIXELS-1)/2, 0);
+      pos = map(angle * 4096, 0, -PI * 4096, (NUMPIXELS)/2, 0);
     }
+
+    Serial.println(angle);
        
 
 //    Serial.println(degrees(angle));
 
     for (int i = 0; i < NUMPIXELS; i++) {
       // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
-      values[i] = constrain(pos == i ? 255 : values[i] - 1, 0, 255);
-      pixels.setPixelColor((NUMPIXELS - 1) - i, values[i], values[i], values[i]);
+      values[i] = constrain((pos + 3) % (NUMPIXELS) == i ? 255 : values[i] - 1, 0, 255);
+      pixels.setPixelColor((NUMPIXELS - 1) - i, values[i], values[i], values[i]);//(NUMPIXELS - 1) - 
     }
 
   }
@@ -243,5 +247,10 @@ void loop() {
     digitalWrite(LED_PIN, blinkState);
   }
 
+}
+
+float ease(float prev, float current, float factor)
+{
+  return prev * factor + current * (1 - factor);
 }
 
